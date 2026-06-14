@@ -15,8 +15,10 @@ from bs4 import BeautifulSoup
 
 
 def get_display_name(team_name: str) -> str:
-    """Strip 'VBK' and similar organizational suffixes, normalize whitespace."""
+    """Normalize scraped team names into display names used in vbk templates."""
     name = re.sub(r'\s*\bVBK\b', '', team_name)
+    name = re.sub(r'\s*\bVolleyballklubb\b', '', name)
+    name = re.sub(r'\s*\bIL\b', '', name)
     name = re.sub(r'\s+', ' ', name).strip()
     return name
 
@@ -24,14 +26,21 @@ def get_display_name(team_name: str) -> str:
 def get_short_name(display_name: str) -> str:
     """
     Generate a Wikipedia-style short name from the display name.
-    Strips leading club-type prefixes (TIF, SK, IK) and trailing numbers.
+
+    For reserve teams with a trailing number, strip that number and optionally
+    remove club-type prefixes (TIF, SK, IK). For first teams (no trailing
+    number), keep the full name (for example: 'TIF Viking').
     """
     short = display_name
-    for prefix in ('TIF ', 'SK ', 'IK '):
-        if short.startswith(prefix):
-            short = short[len(prefix):]
-            break
-    short = re.sub(r'\s+\d+$', '', short).strip()
+    if short.startswith('ToppVolley Norge'):
+        return 'TVN'
+
+    if re.search(r'\s+\d+$', short):
+        for prefix in ('TIF ', 'SK ', 'IK '):
+            if short.startswith(prefix):
+                short = short[len(prefix):]
+                break
+        short = re.sub(r'\s+\d+$', '', short).strip()
     return short
 
 
@@ -40,9 +49,6 @@ def make_vbk(team_name: str) -> str:
     Create a {{vbk|...}} template string from the team name as scraped.
 
     Rules:
-    - Strip 'VBK' from the name to get the display name.
-    - Strip leading prefixes (TIF etc.) and trailing numbers from the display
-      name to get the short (Wikipedia article) name.
     - If short == display: emit {{vbk|short}}  (single param, no redundancy)
     - Otherwise:           emit {{vbk|short|display}}
     """
@@ -72,9 +78,10 @@ def build_navn(comp_title: str) -> str:
     navn = re.sub(r'\b(\d{2}/\d{2})\b',
                   lambda m: expand_year(m.group(1)),
                   comp_title)
-    navn = navn.lower()
     # Insert 'volleyball ' right after 'divisjon '
-    navn = re.sub(r'(divisjon\s+)', r'\1volleyball ', navn)
+    navn = navn.replace('Divisjon ', 'divisjon volleyball ')
+    # Normalize 'Mizunoliga' to 'Mizunoligaen'
+    navn = navn.replace('Mizunoliga', 'Mizunoligaen')
     return navn.rstrip() + ' tabell'
 
 
@@ -171,6 +178,7 @@ def parse_standings(url: str) -> None:
     cat_year = get_category_year(comp_title)
 
     print('{{Volleytabell footer')
+    print('|dato=~~~~~ <!-- HUSK å oppdatere dato (~~~~~) dersom du har oppdatert tabellen. Fjernes ved sesongslutt. -->')
     print(f'|kilde={url}')
     print(f'|navn={navn} }}}}')
     print('{{Volleytabell slutt}}<noinclude>')
