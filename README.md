@@ -1,3 +1,3 @@
 # A collection of scripts to maintain WikiPedia
 
-- [Generating tables for Norwegain volleyball national series](nvbf-national/README.md)
+- [Generating tables for Norwegian volleyball national series](nvbf-national/)

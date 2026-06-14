@@ -15,9 +15,9 @@ python3 -m venv .venv
 
 ### generate_table.py
 
-Purpose:
-- generate a new `{{Volleytabell}}` block from a standings URL
-- output wiki markup to standard output
+The script generates a new complete `{{Volleytabell}}` block from a standings URL.
+
+The wiki markup is sent to standard output.
 
 Usage:
 
@@ -33,18 +33,12 @@ Example:
 
 ### update_existing_table.py
 
-Purpose:
-- update an existing table file based on the URL given as `kilde`
-- creates a backup file with `.bak` extension
+The script updates an existing table file based on the URL given as `kilde`.
 
 Usage:
 
+Copy a the complete `{{Volleytabell}}` block from an edit page and save as a file.
+
 ```bash
 .venv/bin/python3 update_existing_table.py <filename>
-```
-
-Example:
-
-```bash
-.venv/bin/python3 update_existing_table.py example-ongoing.txt
 ```
