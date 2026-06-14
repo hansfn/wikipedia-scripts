@@ -157,8 +157,6 @@ def parse_standings(url: str) -> None:
     pad = max(34, max(len(v) for v in vbk_exprs) + 1)
 
     print('{{Volleytabell start}}')
-    print('//    Rekkefølge | Lag                             '
-          '|Kamper +/-|Sett +/-|Poeng +/-|Poeng|')
 
     for rank, (row, vbk) in enumerate(zip(rows, vbk_exprs), start=1):
         print(
