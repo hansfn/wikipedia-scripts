@@ -4,12 +4,16 @@ Generates Wikipedia `{{Volleytabell}}` markup from NVBF standings pages.
 
 Example: <https://no.wikipedia.org/wiki/Mal:1._divisjon_volleyball_menn_2025/26_tabell>
 
-## Setup
+## Setup / requirements
+
+Example with `venv`. It follows that all commands below are using `.venv/bin/python3` instead of just `python3`.
 
 ```bash
 python3 -m venv .venv
 .venv/bin/pip install requests beautifulsoup4 lxml
 ```
+
+You could of course use the package manager of your distro or the more modern `uv` Python package manager. 
 
 ## Scripts
 
