@@ -1,0 +1,15 @@
+# Config for ruff syntax checking and formatting
+
+line-length = 120
+preview = true
+
+[lint]
+select = [
+  "E", # Error codes (syntax errors, runtime errors, etc.)
+  "F", # Flake8-style codes (style issues and best practices)
+  "B", # Black-specific codes (related to formatting and style)
+  "W", # Warning codes (potential issues that aren't strictly errors)
+]
+extend-select = ["E501"] # line-too-long
+ignore = []
+

@@ -174,9 +174,7 @@ def build_new_row_lines(standings: list[StandingRow], vbk_map: dict[str, str]) -
 
     if missing:
         missing_str = ", ".join(missing)
-        raise RuntimeError(
-            "Could not match these teams to existing {{vbk|...}} rows: " + missing_str
-        )
+        raise RuntimeError("Could not match these teams to existing {{vbk|...}} rows: " + missing_str)
 
     pad = max(34, max(len(v) for v in vbk_exprs) + 1)
 
@@ -197,10 +195,7 @@ def build_new_row_lines(standings: list[StandingRow], vbk_map: dict[str, str]) -
 
 
 def replace_table_rows(lines: list[str], new_row_lines: list[str]) -> list[str]:
-    row_indices = [
-        i for i, line in enumerate(lines)
-        if ROW_RE.match(line.strip())
-    ]
+    row_indices = [i for i, line in enumerate(lines) if ROW_RE.match(line.strip())]
     if not row_indices:
         raise RuntimeError("No existing '{{Volleytabell|...}}' rows found to replace")
 
@@ -208,7 +203,7 @@ def replace_table_rows(lines: list[str], new_row_lines: list[str]) -> list[str]:
     last = row_indices[-1]
 
     # Replace the entire existing row block.
-    return lines[:first] + new_row_lines + lines[last + 1:]
+    return lines[:first] + new_row_lines + lines[last + 1 :]
 
 
 def main() -> int:
