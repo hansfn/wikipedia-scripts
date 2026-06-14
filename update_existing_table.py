@@ -26,7 +26,7 @@ from bs4 import BeautifulSoup
 
 ROW_RE = re.compile(
     r"^\{\{Volleytabell\|\s*\d+\|(.*?)"
-    r"\|\s*\d+\|\s*\d+\|\s*\d+\|\s*\d+\|\s*\d+\|\s*\d+\|\s*\d+\|\}\}\s*$"
+    r"\|\s*\d+\|\s*\d+\|\s*\d+\|\s*\d+\|\s*\d+\|\s*\d+\|\s*\d+(?:\|.*?)?\|\}\}\s*$"
 )
 KILDE_RE = re.compile(r"^\|kilde=(\S+)\s*$")
 
@@ -182,13 +182,15 @@ def build_new_row_lines(standings: list[StandingRow], vbk_map: dict[str, str]) -
 
     new_lines: list[str] = []
     for rank, (row, vbk) in enumerate(zip(standings, vbk_exprs), start=1):
+        farge = "|farge=fff" if rank <= 3 else ""
+        row_end = "}}" if rank <= 3 else "|}}"
         new_lines.append(
             "{{Volleytabell|"
             + f"{rank:2d}|{vbk:<{pad}}"
             + f"|{row.won:2d}|{row.lost:2d}"
             + f"|{row.sets_won:2d}|{row.sets_lost:2d}"
             + f"|{row.pts_for:4d}|{row.pts_against:4d}"
-            + f"|{row.total_pts:2d}|}}}}"
+            + f"|{row.total_pts:2d}{farge}{row_end}"
         )
 
     return new_lines

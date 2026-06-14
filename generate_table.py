@@ -166,12 +166,15 @@ def parse_standings(url: str) -> None:
     print('{{Volleytabell start}}')
 
     for rank, (row, vbk) in enumerate(zip(rows, vbk_exprs), start=1):
+        farge = '|farge=fff' if rank <= 3 else ''
+        row_end = '}}' if rank <= 3 else '|}}'
         print(
-            f'{{{{Volleytabell|{rank:2d}|{vbk:<{pad}}'
+            '{{Volleytabell|'
+            f'{rank:2d}|{vbk:<{pad}}'
             f'|{row["won"]:2d}|{row["lost"]:2d}'
             f'|{row["sets_won"]:2d}|{row["sets_lost"]:2d}'
             f'|{row["pts_for"]:4d}|{row["pts_ag"]:4d}'
-            f'|{row["total_pts"]:2d}|}}}}'
+            f'|{row["total_pts"]:2d}{farge}{row_end}'
         )
 
     navn     = build_navn(comp_title)
