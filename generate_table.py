@@ -14,49 +14,41 @@ import requests
 from bs4 import BeautifulSoup
 
 
-def get_display_name(team_name: str) -> str:
-    """Normalize scraped team names into display names used in vbk templates."""
-    name = re.sub(r'\s*\bVBK\b', '', team_name)
-    name = re.sub(r'\s*\bVolleyballklubb\b', '', name)
-    name = re.sub(r'\s*\bIL\b', '', name)
-    name = re.sub(r'\s+', ' ', name).strip()
-    return name
-
-
-def get_short_name(display_name: str) -> str:
-    """
-    Generate a Wikipedia-style short name from the display name.
-
-    For reserve teams with a trailing number, strip that number and optionally
-    remove club-type prefixes (TIF, SK, IK). For first teams (no trailing
-    number), keep the full name (for example: 'TIF Viking').
-    """
-    short = display_name
-    if short.startswith('ToppVolley Norge'):
-        return 'TVN'
-
-    if re.search(r'\s+\d+$', short):
-        for prefix in ('TIF ', 'SK ', 'IK '):
-            if short.startswith(prefix):
-                short = short[len(prefix):]
-                break
-        short = re.sub(r'\s+\d+$', '', short).strip()
-    return short
-
-
 def make_vbk(team_name: str) -> str:
     """
-    Create a {{vbk|...}} template string from the team name as scraped.
+    Create a {{vbk|...}} template string from the scraped team name.
 
     Rules:
-    - If short == display: emit {{vbk|short}}  (single param, no redundancy)
-    - Otherwise:           emit {{vbk|short|display}}
+    1. Special case: ToppVolley Norge → short = TVN.
+    2. Detect whether the name ends with ' 2' - second team - and strip.
+    3. Strip org prefixes (except TIF) and suffixes.
+    4. Second teams: emit {{vbk|short|short 2}}.
+       First teams:  emit {{vbk|short}}.
     """
-    display = get_display_name(team_name)
-    short = get_short_name(display)
-    if short == display:
-        return f'{{{{vbk|{short}}}}}'
-    return f'{{{{vbk|{short}|{display}}}}}'
+
+    # Step 1: special case
+    if 'ToppVolley Norge' in team_name:
+        return f'{{{{vbk|TVN|{team_name}}}}}'
+
+    # Step 2: detect second team and strip
+    second_team = bool(re.search(r'\s+2$', team_name))
+    if second_team:
+        name = re.sub(r'\s+2$', '', team_name).strip()
+    else:
+        name = team_name
+
+    # Step 3: strip org prefixes and suffixes
+    for prefix in ('SK ', 'IK '):
+        if name.startswith(prefix):
+            name = name[len(prefix):]
+            break
+    name = re.sub(r'\s*\b(VBK|Volleyballklubb|Volleyball|IL)\b', '', name)
+    name = re.sub(r'\s+', ' ', name).strip()
+
+    if second_team:
+        return f'{{{{vbk|{name}|{name} 2}}}}'
+    else:
+        return f'{{{{vbk|{name}}}}}'
 
 
 def expand_year(year_short: str) -> str:
